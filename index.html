@@ -27,11 +27,16 @@
         padding-top: 5px;
       }
       input[type="range"] {
-        flex: 1
+        flex: 1;
+        height: 2em;
       }
       #controls {
         margin-top: 10px;
         display: flex;
+      }
+      img#legend {
+        margin-left: 30px;
+        width: 700px;
       }
     </style>
   </head>
@@ -43,6 +48,7 @@
       <label id="DOY">Day of year: 160</label>
       <input type="range" min="160" max="180" step="1" value="160" oninput="window.handleSlider(event)"/>
       <!-- Pointer events polyfill for old browsers, see https://caniuse.com/#feat=pointer -->
+      <img src="legend.png" id="legend"/>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/elm-pep@1.0.6/dist/elm-pep.js"></script>
     <script type="module" src="main.js"></script>
