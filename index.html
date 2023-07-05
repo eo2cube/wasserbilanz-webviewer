@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Wasserbilanz-WebViewer</title>
+    <link rel="stylesheet" href="node_modules/ol/ol.css">
+    <link rel="stylesheet" href="node_modules/ol-layerswitcher/dist/ol-layerswitcher.css">
+    <style>
+      h1 {
+        text-align: center;
+        margin-bottom: 0;
+      }
+      p {
+        text-align: center;
+      }
+      .map {
+        width: 100%;
+        height: 600px;
+        border: 1px solid black;
+      }
+      body {
+        font-family: sans-serif;
+      }
+      #controls label {
+        font-weight: bold;
+        margin-right: 30px;
+        padding-top: 5px;
+      }
+      input[type="range"] {
+        flex: 1
+      }
+      #controls {
+        margin-top: 10px;
+        display: flex;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Wasserbilanz-WebViewer</h1>
+    <p>Cloud-optimized GeoTIFFs served directly from the AgriSens Datacube</p>
+    <div id="map" class="map"></div>
+    <div id="controls">
+      <label id="DOY">Day of year: 160</label>
+      <input type="range" min="160" max="180" step="1" value="160" oninput="window.handleSlider(event)"/>
+      <!-- Pointer events polyfill for old browsers, see https://caniuse.com/#feat=pointer -->
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/elm-pep@1.0.6/dist/elm-pep.js"></script>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
