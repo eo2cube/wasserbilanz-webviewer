@@ -13,6 +13,8 @@ import LayerSwitcher from 'ol-layerswitcher';
 
 import colormap from 'colormap';
 
+import {addMeasureTool} from './measuretool.js';
+
 proj4.defs('EPSG:32633', '+proj=utm +zone=33 +ellps=WGS84 +datum=WGS84 +units=m +no_defs');
 register(proj4);
 
@@ -67,8 +69,9 @@ for(var i = 160; i<=180; i++) {
 
 export function handleSlider(e) {
     let index = e.srcElement.value-160;
-    map.getLayers().item(index).setVisible(true);  // set new one to visible
-    map.getLayers().forEach((e,i,a) => i==index+1 || i==0 ? e.setVisible(true) : e.setVisible(false));  // set all others to unvisible without hiding the one we just set to visible or the basemap
+    // set to visible: the current layer (given by index), the basemap (always the first layer), and the drawn measurements (always the last layer)
+    // and everything else to unvisible
+    map.getLayers().forEach((e,i,a) => i==index+1 || i==0 || i==a.length-1 ? e.setVisible(true) : e.setVisible(false));
     document.getElementById('DOY').innerHTML = 'Day of year: ' + (index+160);
 }
 window.handleSlider = handleSlider;
@@ -88,6 +91,8 @@ const map = new Map({
     zoom: 15, //10,
   }),
 });
+
+addMeasureTool(map);
 
 const layerSwitcher = new LayerSwitcher({
     reverse: false,
