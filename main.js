@@ -41,7 +41,7 @@ for(var i = 160; i<=180; i++) {
         source: new GeoTIFF({
             sources: [
                 {
-                    url: 'https://phenocube.org/wasserbilanz/data/doy'+i+'-cog-georef.tif',
+                    url: 'data/doy'+i+'-cog-georef.tif',
                     nodata: -9999,
                     min: 20,
                     max: 100
