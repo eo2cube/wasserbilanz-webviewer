@@ -13,6 +13,9 @@
       p {
         text-align: center;
       }
+      p a {
+        color: #098689;
+      }
       .map {
         width: 100%;
         height: 600px;
@@ -34,15 +37,48 @@
         margin-top: 10px;
         display: flex;
       }
+      #controls label {
+        padding-left: 5px;
+      }
       img#legend {
         margin-left: 30px;
         width: 700px;
       }
+      img#logo {
+        position: absolute;
+        top: 10px;
+        left: 20px;
+      }
+      img#ble {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+      }
+      input[type="range"]::-moz-range-track {
+        background-color: #666;
+        height: 10px;
+      }
+      input[type="range"]::-moz-range-progress {
+        background-color: #098689;
+        height: 10px;
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 10px;
+      }
+      footer {
+        text-align: center;
+        color: #666;
+        margin-top: 30px;
+      }
     </style>
   </head>
   <body>
+    <img src="logo-agrisens.svg" width="200" id="logo"/>
+    <img src="gefoerdert-durch.png" width="200" id="ble"/>
     <h1>Wasserbilanz-WebViewer</h1>
-    <p>Cloud-optimized GeoTIFFs served directly from the AgriSens Datacube</p>
+    <p>Modell aus Sensor- und Fernerkundungsdaten zur nachhaltigeren Bewässerung</p>
     <div id="map" class="map"></div>
     <div id="controls">
       <label id="DOY">Day of year: 160</label>
@@ -50,6 +86,11 @@
       <!-- Pointer events polyfill for old browsers, see https://caniuse.com/#feat=pointer -->
       <img src="legend.png" id="legend"/>
     </div>
+    <footer>
+      Data by Thomas Piernicke/GFZ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      Viewer by Christoph Friedrich/EORC &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      Hosted on the <a href="https://eo2cube.org/agrisens_demmin/">AgriSens Datacube</a>
+    </footer>
     <script src="https://cdn.jsdelivr.net/npm/elm-pep@1.0.6/dist/elm-pep.js"></script>
     <script type="module" src="main.js"></script>
   </body>
