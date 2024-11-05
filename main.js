@@ -33,46 +33,26 @@ function getColorStops(name, min, max, steps, reverse) {
     return stops;
 }
 
-let cogs = [];
-for(var i = 160; i<=180; i++) {
-    cogs.push(new TileLayer({
-        title: 'Day '+i,
-        visible: false,  
-        source: new GeoTIFF({
-            sources: [
-                {
-                    url: 'data/doy'+i+'-cog-georef.tif',
-                    nodata: -9999,
-                    min: 20,
-                    max: 100
-                },
-            ],
-            projection: getProjection('EPSG:32633'),
-            normalize: false,
-            interpolate: false,
-        }),
-        style: {
-            color: [ 'case',
-                ['==', ['band', 2], 0],
-                '#00000000',
-                [
-                    'interpolate',
-                    ['linear'],
-                    ['band', 1],
-                    // color ramp for NDVI values
-                    ...getColorStops('viridis', 20, 100, 80, true),
-                ],
-            ]
-        }
-    }));
+function getSourceForDOY(doy) {
+    return new GeoTIFF({
+        sources: [
+            {
+                url: 'all/geotiff_NDVI_DOY/NDVI_DOY_'+doy+'.tif',
+            },
+        ],
+        projection: getProjection('EPSG:32633'),
+        //normalize: false,
+        //interpolate: false,
+    });
 }
 
 export function handleSlider(e) {
-    let index = e.srcElement.value-160;
-    // set to visible: the current layer (given by index), the basemap (always the first layer), and the drawn measurements (always the last layer)
-    // and everything else to unvisible
-    map.getLayers().forEach((e,i,a) => i==index+1 || i==0 || i==a.length-1 ? e.setVisible(true) : e.setVisible(false));
-    document.getElementById('DOY').innerHTML = 'Day of year: ' + (index+160);
+    let doy = e.srcElement.value;
+    map.getLayers()
+      //.filter((v,i,a) => i != 0 && i != a.length-1)
+      //.forEach(e => e.set('source', getSourceForDOY(doy)));
+      .forEach((e,i,a) => { if(i!=0 && i!=a.length-1) { e.set('source', getSourceForDOY(doy))}});
+    document.getElementById('DOY').innerHTML = 'Day of year: ' + doy;
 }
 window.handleSlider = handleSlider;
 
@@ -84,13 +64,64 @@ const map = new Map({
           title: 'OpenStreetMap',
           type: 'base'
       }),
-      ...cogs  // spread out all the COGs from the array
   ],
   view: new View({
     center: fromLonLat([13.242731, 53.941841]), //fromLonLat([13.0328, 53.9071]),
     zoom: 15, //10,
   }),
 });
+
+const layers = {
+    ETc: "Verdunstungleistung der Pflanzen pro Tag [mm], d.h. die Anzahl der Liter Wasser, die pro Tag auf einem Quadratmeter verdunstet ist.",
+    ETc_cumulated: "Verdunstungsleitung der Pflanzen kumuliert über die bisherige Vegetationsperiode [mm], d.h. die Anzahl Liter Wasser, die bisher pro Quadratmeter verdunstet ist.",
+    ETc_precip: "Verdunstungsleistung der Pflanzen pro Tag [mm] abzüglich der Niederschlagshöhe [mm], d.h. die Differenz zwischen dem Niederschlagswasser und dem Verbrauch der Pflanze in Liter pro Tag und Quadratmeter.",
+    ETc_precip_cumulated: "Verdunstungsleistung der Pflanzen pro Tag [mm] abzüglich der Niederschlagshöhe [mm] kumuliert über die Vegetationsperiode, d.h. die Differenz zwischen dem während der Vegetationsperiode gefallenen Niederschlag und dem Wasserverbrauch der Pflanze in Liter pro Quadratmeter.",
+    Irrigation: "Beregnungshöhe pro Quadratmeter und Tag in Liter [mm].",
+    Irrigation_cumulated: "Beregnungshöhe in Liter pro Quadratmeter [mm] während der bisherigen Vegetationsperiode.",
+    Kc: "Kc-Wert pro Tag, d.h. der Pflanzenkoeffizient abhängig vom Entwicklungsstadium der Pflanzen und ihrer Pflanzdichte.",
+    NDVI: "Normalized Difference Vegetation Index (NDVI) als Index, der mit der Pflanzenvitalität und -dichte korreliert.",
+    precipitation: "Niederschlag in Liter je Quadratmeter [mm] und Tag.",
+    precipitation_cumulated: "Kumulierte Niederschlagssumme während der Vegetationsperiode in Liter je Quadratmeter [mm].",
+    waterbalance: "Klimatische Wasserbilanz des aktuellen Tages bestehend aus den Komponenten Niederschlag, Beregnung und Verdunstung in Liter je Quadratmeter [mm].",
+    waterbalance_cumulated: "Kumulierte klimatische Wasserbilanz während der Vegetationsperiode bestehend aus den Komponenten Niederschlag, Beregnung und Verdunstung in Liter je Quadratmeter [mm]."
+}
+
+for (var name in layers) {
+    console.log(name, layers[name]);
+    let source = new GeoTIFF({
+        sources: [
+            {
+                url: 'all/geotiff_'+name+'_DOY/'+name + '_DOY_154.tif',
+                //min: 0, 
+                //max: 1,
+                //nodata: -9999,
+            },
+        ],
+        projection: getProjection('EPSG:32633'),
+        //normalize: false,
+        //interpolate: false,
+    });
+    let layer = new TileLayer({
+        title: name + ' <span style="font-size: smaller" title="' + layers[name] + '">ℹ️</span>',
+        visible: false,
+        source: source,
+        style: {
+            color: [ 'case',
+                ['==', ['band', 2], 0],
+                '#00000000',
+                [
+                    'interpolate',
+                    ['linear'],
+                    ['band', 1],
+                    // color ramp for NDVI values
+                    ...getColorStops(name=='Kc' || name=='NDVI' ? 'summer' : 'RdBu', 0, 1, 100, name=='ETc' || name=='ETc_cumulated' ? false : true),
+                ],
+            ]
+        }
+    });
+    map.addLayer(layer);
+    console.log(layer);
+}
 
 addMeasureTool(map);
 

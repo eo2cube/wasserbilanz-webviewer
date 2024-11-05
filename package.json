@@ -2,7 +2,7 @@
     "name": "wasserbilanz-webviewer",
     "dependencies": {
         "colormap": "^2.3.2",
-        "ol": "7.4.0",
+        "ol": "10.0.0",
         "ol-layerswitcher": "^4.1.1",
         "proj4": "^2.9.0"
     },
