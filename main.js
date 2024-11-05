@@ -86,6 +86,8 @@ const layers = {
     waterbalance_cumulated: "Kumulierte klimatische Wasserbilanz während der Vegetationsperiode bestehend aus den Komponenten Niederschlag, Beregnung und Verdunstung in Liter je Quadratmeter [mm]."
 }
 
+var layerForDataExtraction;
+
 for (var name in layers) {
     console.log(name, layers[name]);
     let source = new GeoTIFF({
@@ -121,6 +123,9 @@ for (var name in layers) {
     });
     map.addLayer(layer);
     console.log(layer);
+    if (name == 'precipitation') {
+        layerForDataExtraction = layer;
+    }
 }
 
 addMeasureTool(map);
@@ -130,3 +135,9 @@ const layerSwitcher = new LayerSwitcher({
     groupSelectStyle: 'group'
 });
 map.addControl(layerSwitcher);
+
+function displayPixelValue(event) {
+  const data = layerForDataExtraction.getData(event.pixel);
+  console.log(data);
+}
+map.on(['pointermove', 'click'], displayPixelValue);
